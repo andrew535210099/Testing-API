@@ -1,7 +1,7 @@
 // Import the necessary dependencies
 const lodash = require("lodash");
 const productsList = require("./products.json").products;
-
+const getRequestData = require('./utils')
 
 const getProducts = () => {
   // get all products
@@ -17,14 +17,20 @@ const getProductsById = (productId, done) => {
     return null
   }
 }
-const saveProduct = (newProduct, done) => {
-   newProduct.id = Date.now(); // Assign a unique ID (timestamp in this case)
-   productsList.push(newProduct);
- 
-   return done(null, JSON.stringify(productsList));
+
+const saveProduct = async (newProduct, done) => {
+  try {
+    // Assuming newProduct is a valid product object
+    productsList.push(newProduct);
+
+    return JSON.stringify(productsList)
+  } catch (error) {
+    return error
+  }
 }
 
-const updateProduct = (productId, updateData, done) => {
+
+const updateProduct = (productId, updateData, done) => { 
   let updatedProductList = lodash.map(productsList, (product) => {
     if (product.id === productId) {
       // update the product with the specified id
@@ -38,11 +44,12 @@ const updateProduct = (productId, updateData, done) => {
 
 const deleteProduct = (productId, done) => {
   // delete a product
+  const product = productsList.find(product => product.id === productId);
   let updatedProductList = lodash.filter(productsList, (product) => {
     return product.id !== productId;
   });
 
-  done(null, JSON.stringify(updatedProductList));
+  return JSON.stringify(product)
 }
 module.exports = {
   getProducts,
